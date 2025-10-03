@@ -1,9 +1,14 @@
+import os
+import uvicorn
 from mcp.server.fastmcp import FastMCP
+from starlette.middleware.cors import CORSMiddleware
+from middleware import SmitheryConfigMiddleware
 from app import dummyTool, compare_json_files
 import json
 
 # Initialize MCP server
 mcp = FastMCP("json-compare-mcp")
+
 
 @mcp.tool()
 async def dummy_tool(param: str) -> str:
@@ -55,5 +60,38 @@ async def compare_json(file1_path: str, file2_path: str) -> str:
 #     return "You are getting better at AI!"
 
 
+def main():
+    """Main entry point supporting both HTTP and stdio transports"""
+    transport_mode = os.getenv("TRANSPORT", "stdio")
+
+    if transport_mode == "http":
+        # HTTP transport for Smithery deployment
+        app = mcp.streamable_http_app()
+
+        # Add CORS middleware
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "OPTIONS"],
+            allow_headers=["*"],
+            expose_headers=["mcp-session-id", "mcp-protocol-version"],
+            max_age=86400,
+        )
+
+        # Add Smithery config middleware
+        app = SmitheryConfigMiddleware(app)
+
+        # Start HTTP server
+        port = int(os.environ.get("PORT", 8081))
+        print(f"Starting HTTP server on port {port}...")
+        uvicorn.run(app, host="0.0.0.0", port=port, log_level="debug")
+
+    else:
+        # STDIO transport for local development
+        print("Starting STDIO server...")
+        mcp.run(transport="stdio")
+
+
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    main()

@@ -1,2 +1,5 @@
 mcp>=0.1.0
 requests>=2.28.0
+uvicorn>=0.30.0
+starlette>=0.37.0
+smithery>=0.1.0

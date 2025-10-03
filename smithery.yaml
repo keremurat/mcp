@@ -1,11 +1,9 @@
-runtime: python
+runtime: container
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: .
 startCommand:
-  type: stdio
-  commandFunction: |-
-    (config) => ({
-      command: 'python',
-      args: ['server.py']
-    })
+  type: http
   configSchema:
     type: object
     properties: {}
