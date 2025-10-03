@@ -1,4 +1,4 @@
-# 🚀 MCP Server Template
+# 🔍 JSON Compare MCP Server
 
 <div align="center">
 
@@ -7,213 +7,227 @@
 ![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 ![Smithery](https://img.shields.io/badge/Smithery-Deploy%20Ready-orange.svg)
 
-**A production-ready Python MCP (Model Context Protocol) server template**
+**Derinlemesine ve sıra-bağımsız JSON karşılaştırma MCP tool'u**
 
-*Deploy to Smithery and other MCP platforms with zero configuration!*
+*İki JSON dosyasını akıllıca karşılaştırın, farklılıkları tespit edin!*
 
-[🎯 Quick Start](#-quick-start) • [📦 Features](#-features) • [🚀 Deploy](#-deploy) • [🛠️ Customize](#️-customize)
+[🎯 Hızlı Başlangıç](#-hızlı-başlangıç) • [📦 Özellikler](#-özellikler) • [🚀 Kullanım](#-kullanım) • [🧪 Test](#-test)
 
 </div>
 
 ---
 
-## ✨ Features
+## ✨ Özellikler
 
-- 🎯 **Zero-Config Deployment** - Ready for Smithery and other MCP platforms
-- 🐍 **Modern Python** - Built with Python 3.11+ and FastMCP
-- 🐳 **Docker Ready** - Containerized for easy deployment
-- 🔧 **Template Structure** - Perfect starting point for your MCP tools
-- 📝 **Well Documented** - Clear examples and best practices
-- ⚡ **Fast Setup** - Get your MCP server running in minutes
+- 🔍 **Derinlemesine Karşılaştırma** - Nested objeler ve array'ler dahil tüm seviyeler
+- 🔀 **Sıra-Bağımsız** - Property ve obje sıralaması önemli değil
+- 📊 **Detaylı Raporlama** - Eksik, fazla ve farklı değerlerin detaylı raporu
+- 🎯 **Path Tracking** - Her farkın tam konumu (örn: `root.user.settings.theme`)
+- 🏷️ **Tip Kontrolü** - Değer tiplerini de karşılaştırır
+- ⚡ **Hızlı ve Verimli** - Optimize edilmiş recursive algoritma
 
-## 🎯 Quick Start
+## 🎯 Hızlı Başlangıç
 
-### 1. Use This Template
-
-Click the **"Use this template"** button at the top of this repository to create your own MCP server.
-
-### 2. Clone & Setup
+### 1. Kurulum
 
 ```bash
-git clone https://github.com/yourusername/your-mcp-server.git
-cd your-mcp-server
+git clone https://github.com/yourusername/json-compare-mcp.git
+cd json-compare-mcp
 pip install -r requirements.txt
 ```
 
-### 3. Run Locally
+### 2. MCP Server'ı Başlat
 
 ```bash
 python server.py
 ```
 
-### 4. Test Your Tools
+### 3. Test Et
 
 ```bash
-# Your MCP server is now running and ready to accept connections!
+python test_compare.py
 ```
 
-## 📦 What's Included
+## 📦 Ne İçeriyor?
 
 ```
-mcp-template/
-├── 🐍 app.py           # Your tool implementations
-├── 🚀 server.py        # MCP server configuration
-├── 📋 requirements.txt # Python dependencies
-├── 🐳 Dockerfile       # Container configuration
-├── ⚙️ smithery.yaml    # Smithery deployment config
-└── 📖 README.md        # This beautiful documentation
+json-compare-mcp/
+├── 🐍 app.py              # JSON karşılaştırma implementasyonu
+├── 🚀 server.py           # MCP server yapılandırması
+├── 🧪 test_compare.py     # Test suite
+├── 📋 requirements.txt    # Python bağımlılıkları
+├── 🐳 Dockerfile          # Container yapılandırması
+├── ⚙️ smithery.yaml       # Smithery deployment config
+└── 📁 test_samples/       # Örnek JSON dosyaları
+    ├── file1.json
+    ├── file2.json
+    └── file3_different.json
 ```
 
-## 🛠️ Customize Your Tools
+## 🚀 Kullanım
 
-### Adding New Tools
-
-1. **Implement your tool logic** in `app.py`:
+### MCP Tool: `compare_json`
 
 ```python
-def myAwesomeTool(param: str) -> str:
-    """Your amazing tool implementation."""
-    # Add your logic here
-    return f"Processed: {param}"
+# İki JSON dosyasını karşılaştır
+compare_json(
+    file1_path="/path/to/first.json",
+    file2_path="/path/to/second.json"
+)
 ```
 
-2. **Register it in the MCP server** in `server.py`:
+### Çıktı Formatı
+
+```json
+{
+  "status": "different",
+  "total_differences": 11,
+  "differences": [
+    {
+      "type": "missing_key",
+      "path": "root.user.settings.language",
+      "key": "language",
+      "file1_value": "tr",
+      "message": "Key 'language' exists in file1 but missing in file2"
+    },
+    {
+      "type": "value_mismatch",
+      "path": "root.user.name",
+      "file1_value": "Ahmet Yılmaz",
+      "file2_value": "Mehmet Demir",
+      "message": "Value mismatch at 'root.user.name'"
+    }
+  ],
+  "summary": {
+    "missing_keys": 1,
+    "extra_keys": 2,
+    "value_mismatches": 8,
+    "type_mismatches": 0
+  }
+}
+```
+
+## 🔍 Karşılaştırma Mantığı
+
+### Seviye 1: Üst Seviye Obje Karşılaştırma
+
+- ✅ Her iki JSON'daki üst seviye objeleri/anahtarları tespit et
+- ✅ **SIRALAMA ÖNEMLİ DEĞİL** - Objeler farklı sırada olabilir
+- ✅ Eksik/fazla objeleri tespit et ve uyar
+- ✅ Eşleşen objeler için Seviye 2'ye geç
+
+### Seviye 2: İç Nesne/Property Karşılaştırma
+
+- ✅ Tüm property'leri karşılaştır
+- ✅ **SIRALAMA ÖNEMLİ DEĞİL** - Property'ler farklı sırada olabilir
+- ✅ Property varlığı, tip ve içerik kontrolü
+- ✅ Array'ler için sıra-bağımsız karşılaştırma
+
+### Fark Tipleri
+
+| Tip | Açıklama |
+|-----|----------|
+| `missing_key` | Anahtar file1'de var, file2'de yok |
+| `extra_key` | Anahtar file2'de var, file1'de yok |
+| `value_mismatch` | Değerler farklı |
+| `type_mismatch` | Veri tipleri farklı |
+
+## 🧪 Test
+
+### Test Suite'i Çalıştır
+
+```bash
+python test_compare.py
+```
+
+### Test Senaryoları
+
+1. **Sıra-bağımsız test**: Aynı içerik, farklı sıralama → `identical`
+2. **Farklılık tespiti**: Farklı değerler → detaylı fark raporu
+3. **Kendisi ile**: Aynı dosya → `identical`
+
+### Test Çıktısı
+
+```
+✅ Test 1 - Sıra-bağımsız: BAŞARILI
+✅ Test 2 - Farklılık tespiti: BAŞARILI
+✅ Test 3 - Aynı dosya: BAŞARILI
+
+🔍 Test 2 Detayları:
+   - Eksik anahtarlar: 1
+   - Fazla anahtarlar: 2
+   - Değer uyuşmazlıkları: 8
+   - Tip uyuşmazlıkları: 0
+   - Toplam fark: 11
+```
+
+## 🛠️ Geliştirme
+
+### Yeni Tool Eklemek
+
+[app.py](app.py) dosyasına yeni fonksiyon ekle:
 
 ```python
-@mcp.tool()
-async def my_awesome_tool(param: str) -> str:
-    """
-    Description of what your tool does.
-    """
-    result = myAwesomeTool(param)
+def myNewTool(param: str) -> str:
+    # Your logic
     return result
 ```
 
-### Example Tool Structure
-
-The template includes a dummy tool to get you started:
+[server.py](server.py) dosyasına MCP tool olarak kaydet:
 
 ```python
 @mcp.tool()
-async def dummy_tool(param: str) -> str:
-    """
-    A sample tool that processes input parameters.
-    """
-    awesome_response = dummyTool(param)
-    return awesome_response
+async def my_new_tool(param: str) -> str:
+    """Tool açıklaması"""
+    return myNewTool(param)
 ```
 
-## 🚀 Deploy
+## 🚀 Deployment
 
 ### Smithery Deployment
 
-This template is **Smithery-ready**! The `smithery.yaml` configuration is already set up:
-
-1. Push your customized code to GitHub
-2. Connect your repository to Smithery
-3. Deploy with one click! 🎉
+1. Repository'yi GitHub'a push et
+2. Smithery'de repository'yi bağla
+3. Tek tıkla deploy et! 🎉
 
 ### Docker Deployment
 
 ```bash
-# Build the container
-docker build -t my-mcp-server .
-
-# Run the container
-docker run -p 8000:8000 my-mcp-server
+docker build -t json-compare-mcp .
+docker run -p 8000:8000 json-compare-mcp
 ```
 
-### Manual Deployment
-
-Deploy to any platform that supports Python applications:
+### Manuel Deployment
 
 ```bash
 pip install -r requirements.txt
 python server.py
 ```
 
-## 🔧 Configuration
+## 📋 Gereksinimler
 
-### Environment Variables
+- Python 3.11+
+- mcp
+- requests
 
-Customize your MCP server behavior:
+## 🤝 Katkıda Bulunma
 
-```bash
-export MCP_SERVER_NAME="my-awesome-mcp"
-export LOG_LEVEL="INFO"
-```
+1. 🍴 Fork et
+2. 🌱 Feature branch oluştur
+3. 💻 Değişiklikleri yap
+4. 🧪 Test et
+5. 📝 Pull request gönder
 
-### Dependencies
+## 📄 Lisans
 
-Add your required packages to `requirements.txt`:
-
-```
-requests>=2.28.0
-mcp
-your-additional-package>=1.0.0
-```
-
-## 📚 Examples
-
-### HTTP API Tool
-
-```python
-def fetchData(url: str) -> dict:
-    """Fetch data from an API endpoint."""
-    response = requests.get(url)
-    return response.json()
-
-@mcp.tool()
-async def fetch_api_data(url: str) -> str:
-    """Fetch and return data from a URL."""
-    data = fetchData(url)
-    return json.dumps(data, indent=2)
-```
-
-### File Processing Tool
-
-```python
-def processFile(content: str) -> str:
-    """Process file content."""
-    # Your processing logic
-    return content.upper()
-
-@mcp.tool()
-async def process_text(text: str) -> str:
-    """Process and transform text content."""
-    return processFile(text)
-```
-
-## 🤝 Contributing
-
-Found a bug or have a feature request? 
-
-1. 🍴 Fork the repository
-2. 🌱 Create a feature branch
-3. 💻 Make your changes
-4. 🧪 Test thoroughly
-5. 📝 Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🌟 Show Your Support
-
-If this template helped you build something awesome, please consider:
-
-- ⭐ **Starring this repository** - it makes me happy! 😊
-- 🐦 **Sharing it** with other developers
-- 🛠️ **Contributing** improvements back to the community
+MIT License - Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by [Alperen Koçyiğit](https://github.com/alperenkocyigit)**
+**Made with ❤️ for better JSON comparison**
 
-*Building the future of AI tool integration, one MCP server at a time* 🚀
-
-[![GitHub](https://img.shields.io/badge/GitHub-alperenkocyigit-black?style=flat&logo=github)](https://github.com/alperenkocyigit)
+*Sıra-bağımsız, derinlemesine, güvenilir* 🚀
 
 </div>

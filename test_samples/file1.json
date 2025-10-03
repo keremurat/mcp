@@ -1,0 +1,32 @@
+{
+  "user": {
+    "id": 12345,
+    "name": "Ahmet Yılmaz",
+    "email": "ahmet@example.com",
+    "age": 30,
+    "roles": ["admin", "user", "editor"],
+    "settings": {
+      "theme": "dark",
+      "notifications": true,
+      "language": "tr"
+    }
+  },
+  "products": [
+    {
+      "id": 1,
+      "name": "Laptop",
+      "price": 15000,
+      "stock": 10
+    },
+    {
+      "id": 2,
+      "name": "Mouse",
+      "price": 150,
+      "stock": 50
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "created_at": "2025-01-01T00:00:00Z"
+  }
+}
