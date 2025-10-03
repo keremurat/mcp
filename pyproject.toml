@@ -1,0 +1,26 @@
+[project]
+name = "json-compare-mcp"
+version = "1.0.0"
+description = "Deep and order-agnostic JSON comparison MCP server"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=0.1.0",
+    "requests>=2.28.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/json-compare-mcp"
+Repository = "https://github.com/yourusername/json-compare-mcp"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []
+py-modules = ["app", "server"]
