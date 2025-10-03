@@ -6,5 +6,5 @@ startCommand:
     properties: {}
   commandFunction:
     |-
-    (config) => ({ command: 'python', args: ['-m', 'server'] })
+    (config) => ({ command: 'python', args: ['server.py'] })
   exampleConfig: {}
