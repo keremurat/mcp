@@ -10,24 +10,21 @@ def dummyTool(param: str) -> str:
     return f"Your tool will return processed {param}"
 
 
-def compare_json_files(file1_path: str, file2_path: str) -> Dict[str, Any]:
+def compare_json_strings(json1_str: str, json2_str: str) -> Dict[str, Any]:
     """
-    İki JSON dosyasını derinlemesine ve sıra-bağımsız şekilde karşılaştırır.
+    İki JSON string'ini derinlemesine ve sıra-bağımsız şekilde karşılaştırır.
 
     Args:
-        file1_path: İlk JSON dosyasının yolu
-        file2_path: İkinci JSON dosyasının yolu
+        json1_str: İlk JSON string
+        json2_str: İkinci JSON string
 
     Returns:
         Karşılaştırma sonuçlarını içeren detaylı rapor
     """
     try:
-        # JSON dosyalarını oku
-        with open(file1_path, 'r', encoding='utf-8') as f1:
-            json1 = json.load(f1)
-
-        with open(file2_path, 'r', encoding='utf-8') as f2:
-            json2 = json.load(f2)
+        # JSON string'lerini parse et
+        json1 = json.loads(json1_str)
+        json2 = json.loads(json2_str)
 
         # Karşılaştırmayı gerçekleştir
         differences = []
@@ -48,15 +45,45 @@ def compare_json_files(file1_path: str, file2_path: str) -> Dict[str, Any]:
 
         return result
 
+    except json.JSONDecodeError as e:
+        return {
+            "status": "error",
+            "error": f"JSON parse hatası: {str(e)}",
+            "details": "Lütfen geçerli bir JSON formatı kullanın"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": f"Beklenmeyen hata: {str(e)}"
+        }
+
+
+def compare_json_files(file1_path: str, file2_path: str) -> Dict[str, Any]:
+    """
+    İki JSON dosyasını derinlemesine ve sıra-bağımsız şekilde karşılaştırır.
+    (Geriye uyumluluk için korundu)
+
+    Args:
+        file1_path: İlk JSON dosyasının yolu
+        file2_path: İkinci JSON dosyasının yolu
+
+    Returns:
+        Karşılaştırma sonuçlarını içeren detaylı rapor
+    """
+    try:
+        # JSON dosyalarını oku
+        with open(file1_path, 'r', encoding='utf-8') as f1:
+            json1_str = f1.read()
+
+        with open(file2_path, 'r', encoding='utf-8') as f2:
+            json2_str = f2.read()
+
+        return compare_json_strings(json1_str, json2_str)
+
     except FileNotFoundError as e:
         return {
             "status": "error",
             "error": f"Dosya bulunamadı: {str(e)}"
-        }
-    except json.JSONDecodeError as e:
-        return {
-            "status": "error",
-            "error": f"JSON parse hatası: {str(e)}"
         }
     except Exception as e:
         return {

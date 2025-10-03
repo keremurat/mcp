@@ -69,12 +69,14 @@ json-compare-mcp/
 ### MCP Tool: `compare_json`
 
 ```python
-# İki JSON dosyasını karşılaştır
+# İki JSON string'ini karşılaştır
 compare_json(
-    file1_path="/path/to/first.json",
-    file2_path="/path/to/second.json"
+    json1='{"name": "Ahmet", "age": 30, "city": "Istanbul"}',
+    json2='{"age": 30, "city": "Istanbul", "name": "Ahmet"}'
 )
 ```
+
+**Not:** Artık dosya yolu değil, direkt JSON string kullanın!
 
 ### Çıktı Formatı
 

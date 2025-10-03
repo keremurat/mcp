@@ -24,9 +24,9 @@ async def dummy_tool(param: str) -> str:
 
 
 @mcp.tool()
-async def compare_json(file1_path: str, file2_path: str) -> str:
+async def compare_json(json1: str, json2: str) -> str:
     """
-    İki JSON dosyasını derinlemesine ve sıra-bağımsız (order-agnostic) şekilde karşılaştırır.
+    İki JSON'u derinlemesine ve sıra-bağımsız (order-agnostic) şekilde karşılaştırır.
 
     Bu tool:
     - Üst seviye objeleri/anahtarları karşılaştırır (sıralama önemli değil)
@@ -36,8 +36,8 @@ async def compare_json(file1_path: str, file2_path: str) -> str:
     - Nested array'ler ve objeler için recursive karşılaştırma yapar
 
     Args:
-        file1_path: İlk JSON dosyasının tam yolu
-        file2_path: İkinci JSON dosyasının tam yolu
+        json1: İlk JSON string (örn: '{"name": "John", "age": 30}')
+        json2: İkinci JSON string (örn: '{"age": 30, "name": "John"}')
 
     Returns:
         Karşılaştırma sonuçlarını içeren detaylı JSON raporu:
@@ -45,8 +45,13 @@ async def compare_json(file1_path: str, file2_path: str) -> str:
         - total_differences: Toplam fark sayısı
         - differences: Tespit edilen tüm farkların listesi
         - summary: Fark tiplerinin özet istatistikleri
+
+    Example:
+        compare_json('{"a": 1}', '{"a": 2}')
+        # Returns: differences showing value mismatch at "root.a"
     """
-    result = compare_json_files(file1_path, file2_path)
+    from app import compare_json_strings
+    result = compare_json_strings(json1, json2)
     return json.dumps(result, indent=2, ensure_ascii=False)
 
 
